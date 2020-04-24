@@ -18,8 +18,6 @@ public class SampleDataInitializer {
 
     @EventListener(ApplicationReadyEvent.class)
     public void go() {
-
-        log.info("Running!");
         var just = Flux.just("Luis", "Josh", "Anna", "Spencer", "Cornelia", "Veronica", "Maduras")
                 .map(name -> new Reservation(null, name))
                 .flatMap(reservationRepository::save);
