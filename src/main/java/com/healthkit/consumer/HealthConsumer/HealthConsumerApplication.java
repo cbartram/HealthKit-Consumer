@@ -1,13 +1,14 @@
 package com.healthkit.consumer.HealthConsumer;
 
-import com.healthkit.consumer.HealthConsumer.model.document.Reservation;
-import com.healthkit.consumer.HealthConsumer.repository.ReservationRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.healthkit.consumer.HealthConsumer.model.document.HealthKitMetric;
+import com.healthkit.consumer.HealthConsumer.repository.HealthKitMetricRepository;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -23,14 +24,13 @@ import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAd
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
-@Slf4j
+@Log4j2
 @SpringBootApplication
 public class HealthConsumerApplication extends AbstractReactiveMongoConfiguration {
 
@@ -39,9 +39,9 @@ public class HealthConsumerApplication extends AbstractReactiveMongoConfiguratio
 	}
 
 	@Bean
-	public RouterFunction<ServerResponse> routes(ReservationRepository reservationRepository) {
+	public RouterFunction<ServerResponse> routes(HealthKitMetricRepository healthKitMetricRepository) {
 		return route()
-				.GET("/reservations", request -> ok().body(reservationRepository.findAll(), Reservation.class))
+				.GET("/reservations", request -> ok().body(healthKitMetricRepository.findAll(), HealthKitMetric.class))
 				.build();
 	}
 
@@ -60,12 +60,29 @@ public class HealthConsumerApplication extends AbstractReactiveMongoConfiguratio
 	}
 
 	@Bean
-	public WebSocketHandler webSocketHandler(GreetingProducer producer) {
+	public WebSocketHandler webSocketHandler(GreetingProducer producer, HealthKitMetricRepository healthKitMetricRepository) {
+		final ObjectMapper mapper = new ObjectMapper();
+		Flux.just(new HealthKitMetric( "heartRate", "62.0"))
+				.flatMap(healthKitMetricRepository::save)
+				.subscribe(log::info);
+
 		return session -> {
-			log.info("New session establisehd.");
+			log.info("New session established");
 			Flux<WebSocketMessage> map =  session.receive()
 					.map(wsm -> wsm.getPayloadAsText())
-					.map(GreetingsRequest::new)
+					.map((text) -> {
+						try {
+							return mapper.readValue(text, HealthKitMetric.class);
+						} catch(Exception e) {
+							log.error("Failed to serialize json string: \"{}\" into a new HealthKitMetric class", text);
+							return new HealthKitMetric();
+						}
+					})
+					.flatMap(healthKitMetricRepository::save)
+					.map(res -> {
+						log.info("Saved Item: {}", res);
+						return res;
+					})
 					.flatMap(producer::greet)
 					.map(GreetingsResponse::getMessage)
 					.map(session::textMessage);
@@ -80,19 +97,12 @@ public class HealthConsumerApplication extends AbstractReactiveMongoConfiguratio
 		private String message;
 	}
 
-	@Data
-	@AllArgsConstructor
-	@NoArgsConstructor
-	class GreetingsRequest  {
-		private String name;
-	}
-
 
 	// This will be represented by the iOS device/client
 	@Service
 	class GreetingProducer {
-		Flux<GreetingsResponse> greet (GreetingsRequest request) {
-			return Flux.fromStream(Stream.generate(() -> new GreetingsResponse("Hello: " + request.getName() + "_" + Instant.now())))
+		Flux<GreetingsResponse> greet(final HealthKitMetric request) {
+			return Flux.fromStream(Stream.generate(() -> new GreetingsResponse("Streaming -> " + request.getMetricName())))
 					.delayElements(Duration.ofSeconds(3));
 		}
 	}
@@ -109,7 +119,7 @@ public class HealthConsumerApplication extends AbstractReactiveMongoConfiguratio
 
 	@Override
 	protected String getDatabaseName() {
-		return "people";
+		return "metrics";
 	}
 
 	@Override
