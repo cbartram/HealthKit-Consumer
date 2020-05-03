@@ -1,22 +1,13 @@
 package com.healthkit.consumer.HealthConsumer;
 
-import com.healthkit.consumer.HealthConsumer.model.document.HealthKitMetric;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.config.AbstractReactiveMongoConfiguration;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-
-import java.time.Duration;
-import java.util.stream.Stream;
 
 @Log4j2
 @SpringBootApplication
@@ -40,24 +31,6 @@ public class HealthConsumerApplication extends AbstractReactiveMongoConfiguratio
 //
 //		return new CorsWebFilter(source);
 //	}
-
-
-	@Data
-	@AllArgsConstructor
-	@NoArgsConstructor
-	public class GreetingsResponse {
-		private String message;
-	}
-
-
-	// This will be represented by the iOS device/client
-	@Service
-	public class GreetingProducer {
-		public Flux<GreetingsResponse> greet(final HealthKitMetric request) {
-			return Flux.fromStream(Stream.generate(() -> new GreetingsResponse("Streaming -> " + request.getMetricName())))
-					.delayElements(Duration.ofSeconds(3));
-		}
-	}
 
 	@Bean
 	public MongoClient mongoClient() {
