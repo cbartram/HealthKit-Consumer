@@ -15,7 +15,7 @@ import { getRequestUrl } from "./constants";
  * @param debug Boolean true if we should print the http response and false otherwise. Defaults to false
  * @returns {Promise<*|Promise<any>|undefined>}
  */
-export const post = async (body, path, requestType, successType, failureType, dispatch, getState, debug = false) => {
+export const post = async (body, path, requestType, successType, failureType, dispatch, getState, debug = true) => {
     //If we don't need redux for the action we can just skip the dispatch by setting the actions to null
     let doDispatch = true;
     if (isNil(requestType) || isNil(successType) || isNil(failureType)) doDispatch = false;
@@ -36,6 +36,7 @@ export const post = async (body, path, requestType, successType, failureType, di
             body: JSON.stringify(body),
         };
 
+        debug && console.log('[DEBUG] Making POST to url: ', getRequestUrl(path));
         const response = await (await fetch(getRequestUrl(path), params)).json();
         debug && console.log('[DEBUG] Post Response: ', response);
 
