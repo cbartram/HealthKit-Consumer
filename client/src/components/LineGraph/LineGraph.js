@@ -14,7 +14,7 @@ export default class LineGraph extends Component {
                 labels: ['Heart Rate', 'O2', 'Blood Pressure', 'Pulse Oximiter', 'Cholesterol', 'Temperature'],
                 datasets: [{
                     label: 'Metrics',
-                    data: [12, 19, 3, 5, 2, 3],
+                    data: this.props.data,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',

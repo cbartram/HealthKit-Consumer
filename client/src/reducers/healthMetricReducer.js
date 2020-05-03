@@ -23,7 +23,7 @@ export default (state = { isFetching: false, error: null, }, action) => {
                 ...state,
                 error: null,
                 isFetching: false,
-                metrics: [...action.payload]
+                metrics: [...action.payload.metrics]
             };
         case GET_HEALTH_METRICS_FAILURE:
             return {
