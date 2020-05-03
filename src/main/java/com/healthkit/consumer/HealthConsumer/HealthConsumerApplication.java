@@ -15,6 +15,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.config.AbstractReactiveMongoConfiguration;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
@@ -24,6 +28,7 @@ import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAd
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -39,10 +44,26 @@ public class HealthConsumerApplication extends AbstractReactiveMongoConfiguratio
 	}
 
 	@Bean
+	@CrossOrigin
 	public RouterFunction<ServerResponse> routes(HealthKitMetricRepository healthKitMetricRepository) {
 		return route()
-				.GET("/reservations", request -> ok().body(healthKitMetricRepository.findAll(), HealthKitMetric.class))
+				.GET("/health/metrics", request -> ok().body(healthKitMetricRepository.findAll(), HealthKitMetric.class))
 				.build();
+	}
+
+	@Bean
+	CorsWebFilter corsWebFilter() {
+		CorsConfiguration corsConfig = new CorsConfiguration();
+		corsConfig.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+		corsConfig.setMaxAge(8000L);
+		corsConfig.addAllowedMethod("PUT");
+		corsConfig.addAllowedHeader("Baeldung-Allowed");
+
+		UrlBasedCorsConfigurationSource source =
+				new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", corsConfig);
+
+		return new CorsWebFilter(source);
 	}
 
 	@Bean

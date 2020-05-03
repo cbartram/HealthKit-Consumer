@@ -3,7 +3,12 @@
  * Constants as the name suggests are constant and never change regardless of state changes.
  * @type {{}}
  */
-export const INITIAL_STATE = {};
+export const INITIAL_STATE = {
+    health: {
+        isFetching: false,
+        error: null,
+    }
+};
 
 /**
  * Helper variable to determine if the App is in the production environment. This decides which API call to make.
@@ -13,10 +18,10 @@ export const IS_PROD = window.location.hostname !== 'localhost' || process.env.R
 
 
 // Prod Params
-export const PROD_URL = 'https://2147bwmah5.execute-api.us-east-1.amazonaws.com/prod';
+export const PROD_URL = 'http://localhost:8080';
 
 // Dev Params
-export const DEV_URL = 'https://5c5aslvp9k.execute-api.us-east-1.amazonaws.com/dev';
+export const DEV_URL = 'http://localhost:8080';
 
 /**
  * Helper function which determines the correct API to hit (prod,dev) and the correct region to use.
@@ -36,3 +41,11 @@ export const getRequestUrl = (endpointURI) => {
 
     return url;
 };
+
+// Api endpoints
+export const GET_HEALTH_METRICS = '/health/metrics';
+
+// Redux Constants
+export const GET_HEALTH_METRICS_REQUEST = 'GET_HEALTH_METRICS_REQUEST';
+export const GET_HEALTH_METRICS_SUCCESS = 'GET_HEALTH_METRICS_SUCCESS';
+export const GET_HEALTH_METRICS_FAILURE = 'GET_HEALTH_METRICS_FAILURE';

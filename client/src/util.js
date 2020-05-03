@@ -1,5 +1,73 @@
 import React from 'react';
+import isNil from 'lodash/isNil';
+import { getRequestUrl } from "./constants";
 
+/**
+ * Makes a generic POST request to the API to retrieve, insert, or update
+ * data and dispatches actions to redux to update application state based on the response.
+ * @param body Object the body to be included in the post request
+ * @param path String the API path to POST to. This should begin with a /
+ * @param requestType String the redux dispatch type for making the API request
+ * @param successType String the redux dispatch type when the request is successful
+ * @param failureType String the redux dispatch type when the request has failed.
+ * @param dispatch Function redux dispatch function
+ * @param getState function returns the current state of the application as an object from the redux store
+ * @param debug Boolean true if we should print the http response and false otherwise. Defaults to false
+ * @returns {Promise<*|Promise<any>|undefined>}
+ */
+export const post = async (body, path, requestType, successType, failureType, dispatch, getState, debug = false) => {
+    //If we don't need redux for the action we can just skip the dispatch by setting the actions to null
+    let doDispatch = true;
+    if (isNil(requestType) || isNil(successType) || isNil(failureType)) doDispatch = false;
+
+    doDispatch &&
+    dispatch({
+        type: requestType,
+        payload: body // Sets isFetching to true (useful for unit testing redux)
+    });
+
+    try {
+        const params = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify(body),
+        };
+
+        const response = await (await fetch(getRequestUrl(path), params)).json();
+        debug && console.log('[DEBUG] Post Response: ', response);
+
+        return new Promise((resolve, reject) => {
+            if (response.statusCode === 200) {
+                doDispatch &&
+                dispatch({
+                    type: successType,
+                    payload: response,
+                });
+
+                resolve(response);
+            } else if (response.statusCode > 200 || typeof response.statusCode === 'undefined') {
+                // An error occurred
+                doDispatch &&
+                dispatch({
+                    type: failureType,
+                    payload: { message: `There was an error retrieving data from the API: ${JSON.stringify(response)}`}
+                });
+
+                reject(response);
+            }
+        });
+    } catch(err) {
+        console.log('[ERROR] Error receiving response from API', err);
+        doDispatch &&
+        dispatch({
+            type: failureType,
+            payload: { message: err.message }
+        });
+    }
+};
 
 /**
  * Parses the query string from the URL.
