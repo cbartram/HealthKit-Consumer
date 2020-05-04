@@ -1,41 +1,29 @@
 import React, { Component } from 'react'
-import moment from 'moment';
 import takeRight from 'lodash/takeRight';
 import {
-    VictoryChart,
-    VictoryAxis,
-    VictoryLine,
-    VictoryTheme
-} from 'victory';
+    LineChart,
+    Tooltip,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Legend
+} from 'recharts';
 
 
 export default class LineGraph extends Component {
-
     render() {
         return (
-            <VictoryChart
-                theme={VictoryTheme.material}
-                // domainPadding will add space to each side of VictoryBar to
-                // prevent it from overlapping the axis
-                domainPadding={20}
-            >
-                {/*<VictoryAxis*/}
-                {/*    tickValues={[...takeRight(this.props.data.map((d, i) => i), 50)]}*/}
-                {/*    tickFormat={[...takeRight(this.props.data.map((d, i) => moment().add(i, 'minutes').format('hh:mm:ss')), 50)]}*/}
-                {/*/>   */}
-                <VictoryAxis
-                    dependentAxis
-                />
-                <VictoryLine
-                    style={{
-                        data: { stroke: "#c43a31" },
-                        parent: { border: "1px solid #ccc"}
-                    }}
-                    data={[
-                        ...takeRight(this.props.data.map((d, i) => ({ x: i, y: d})), 50)
-                    ]}
-                 />
-            </VictoryChart>
+            <LineChart width={900} height={300} backgroundColor="#00ff00">
+                {this.props.series.map(s => (
+                    <Line dataKey="value" stroke="#5469D4" strokeWidth={2} data={takeRight(s.data, 15)} name={s.name} key={s.name} />
+                ))}
+                <Legend />
+                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="timestamp" />
+                <YAxis />
+            </LineChart>
         )
     }
 }
