@@ -18,11 +18,34 @@ function App(props) {
     const [healthMetrics, setHealthMetrics] = useState([]);
 
     useEffect(() => {
-        const interval = setInterval(async () => {
-            await props.fetchHeartRate();
-            setHealthMetrics([{ name: 'BPM', data: props.data }])
-        }, 5000);
-        return () => clearInterval(interval);
+        let ws = new WebSocket('ws://localhost:8080/ws/metrics');
+        // ws.addEventListener('open', () => {
+        //     let value = window.prompt('What is the heart rate value?');
+        //     ws.send("{ \"metric\": \"heartRate\", \"value\": \"" +  value + "\"}");
+        // });
+
+        ws.onopen = () => {
+            console.log('[INFO] Connected...')
+        };
+
+        ws.onclose = () => {
+            console.log('[INFO] Disconnected...')
+        };
+
+        ws.onerror = err => {
+            console.error(
+                "Socket encountered error: ",
+                err.message,
+                "Closing socket"
+            );
+
+            ws.close();
+        };
+
+        ws.onmessage = ({ data }) => {
+         const d = JSON.parse(data);
+         console.log('[INFO] Received event: ', d);
+        };
     }, []);
 
     return (

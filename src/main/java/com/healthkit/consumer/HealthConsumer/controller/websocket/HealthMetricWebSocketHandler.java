@@ -3,6 +3,7 @@ package com.healthkit.consumer.HealthConsumer.controller.websocket;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.healthkit.consumer.HealthConsumer.model.document.HealthKitMetric;
 import com.healthkit.consumer.HealthConsumer.repository.HealthKitMetricRepository;
+import com.healthkit.consumer.HealthConsumer.service.HealthKitProducer;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -32,13 +33,14 @@ public class HealthMetricWebSocketHandler {
 
 
     @Bean
-    public WebSocketHandler webSocketHandler(HealthKitMetricRepository healthKitMetricRepository) {
+    public WebSocketHandler webSocketHandler(HealthKitProducer producer, HealthKitMetricRepository healthKitMetricRepository) {
         return session -> {
             log.info("New websocket session established with client: {}", session.getId());
             Flux<WebSocketMessage> map =  session.receive()
                     .map(WebSocketMessage::getPayloadAsText)
                     .map((text) -> {
                         try {
+                            log.info("Serializing message into : {}", text);
                             return mapper.readValue(text, HealthKitMetric.class);
                         } catch(Exception e) {
                             log.error("Failed to serialize json string: \"{}\" into a new HealthKitMetric class", text);
@@ -46,7 +48,8 @@ public class HealthMetricWebSocketHandler {
                         }
                     })
                     .flatMap(healthKitMetricRepository::save)
-                    .map(HealthKitMetric::toString)
+                    .flatMap(producer::produce)
+//                    .map(HealthConsumerApplication.GreetingsResponse::getMessage)
                     .map(session::textMessage);
             return session.send(map);
         };
