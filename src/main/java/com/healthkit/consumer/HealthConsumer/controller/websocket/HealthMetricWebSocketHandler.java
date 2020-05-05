@@ -1,5 +1,6 @@
 package com.healthkit.consumer.HealthConsumer.controller.websocket;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.healthkit.consumer.HealthConsumer.model.document.HealthKitMetric;
 import com.healthkit.consumer.HealthConsumer.repository.HealthKitMetricRepository;
@@ -12,8 +13,11 @@ import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.UnicastProcessor;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 @Log4j2
 @Component
@@ -31,27 +35,83 @@ public class HealthMetricWebSocketHandler {
         }};
     }
 
+    private static class WebSocketMessageSubscriber {
+        private UnicastProcessor<HealthKitMetric> eventPublisher;
+        private Optional<HealthKitMetric> lastReceivedEvent = Optional.empty();
+
+        public WebSocketMessageSubscriber(final UnicastProcessor<HealthKitMetric> eventPublisher) {
+            this.eventPublisher = eventPublisher;
+        }
+
+        public void onNext(final HealthKitMetric event) {
+            lastReceivedEvent = Optional.of(event);
+            eventPublisher.onNext(event);
+        }
+
+        public void onError(Throwable error) {
+            log.error("Something went wrong with the websocket message subscriber:", error);
+        }
+
+        public void onComplete() {
+            lastReceivedEvent.ifPresent(event -> eventPublisher.onNext(new HealthKitMetric("disconnected", "62")));
+        }
+    }
+
+        private HealthKitMetric toHealthKitMetric(String json) {
+        try {
+            return mapper.readValue(json, HealthKitMetric.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Invalid JSON:" + json, e);
+        }
+    }
+
+    private String toJSON(HealthKitMetric event) {
+        try {
+            return mapper.writeValueAsString(event);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     @Bean
-    public WebSocketHandler webSocketHandler(HealthKitProducer producer, HealthKitMetricRepository healthKitMetricRepository) {
+    public WebSocketHandler webSocketHandler(
+            UnicastProcessor<HealthKitMetric> eventPublisher,
+            Flux<HealthKitMetric> events,
+            HealthKitProducer producer,
+            HealthKitMetricRepository healthKitMetricRepository) {
+        WebSocketMessageSubscriber subscriber = new WebSocketMessageSubscriber(eventPublisher);
         return session -> {
             log.info("New websocket session established with client: {}", session.getId());
-            Flux<WebSocketMessage> map =  session.receive()
+
+            return session.receive()
                     .map(WebSocketMessage::getPayloadAsText)
-                    .map((text) -> {
-                        try {
-                            log.info("Serializing message into : {}", text);
-                            return mapper.readValue(text, HealthKitMetric.class);
-                        } catch(Exception e) {
-                            log.error("Failed to serialize json string: \"{}\" into a new HealthKitMetric class", text);
-                            return new HealthKitMetric();
-                        }
-                    })
+                    .map(this::toHealthKitMetric)
                     .flatMap(healthKitMetricRepository::save)
-                    .flatMap(producer::produce)
+                    .doOnNext(subscriber::onNext)
+                    .doOnError(subscriber::onError)
+                    .doOnComplete(subscriber::onComplete)
+                    .zipWith(session.send(Flux.from(events).map(this::toJSON).map(session::textMessage)))
+                    .then();
+
+
+
+//            Flux<WebSocketMessage> map =  session.receive()
+//                    .map(WebSocketMessage::getPayloadAsText)
+//                    .map((text) -> {
+//                        try {
+//                            log.info("Serializing message into : {}", text);
+//                            return mapper.readValue(text, HealthKitMetric.class);
+//                        } catch(Exception e) {
+//                            log.error("Failed to serialize json string: \"{}\" into a new HealthKitMetric class", text);
+//                            return new HealthKitMetric();
+//                        }
+//                    })
+//                    .flatMap(healthKitMetricRepository::save)
+//                    .flatMap(producer::produce)
 //                    .map(HealthConsumerApplication.GreetingsResponse::getMessage)
-                    .map(session::textMessage);
-            return session.send(map);
+//                    .map(session::textMessage);
+//            return session.send(map);
         };
     }
 }
