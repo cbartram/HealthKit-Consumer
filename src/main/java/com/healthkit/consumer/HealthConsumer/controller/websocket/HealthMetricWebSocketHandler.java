@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.healthkit.consumer.HealthConsumer.model.document.HealthKitMetric;
 import com.healthkit.consumer.HealthConsumer.repository.HealthKitMetricRepository;
-import com.healthkit.consumer.HealthConsumer.service.HealthKitProducer;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -57,7 +56,7 @@ public class HealthMetricWebSocketHandler {
         }
     }
 
-        private HealthKitMetric toHealthKitMetric(String json) {
+    private HealthKitMetric toHealthKitMetric(String json) {
         try {
             return mapper.readValue(json, HealthKitMetric.class);
         } catch (IOException e) {
@@ -75,15 +74,10 @@ public class HealthMetricWebSocketHandler {
 
 
     @Bean
-    public WebSocketHandler webSocketHandler(
-            UnicastProcessor<HealthKitMetric> eventPublisher,
-            Flux<HealthKitMetric> events,
-            HealthKitProducer producer,
-            HealthKitMetricRepository healthKitMetricRepository) {
+    public WebSocketHandler webSocketHandler(UnicastProcessor<HealthKitMetric> eventPublisher, Flux<HealthKitMetric> events, HealthKitMetricRepository healthKitMetricRepository) {
         WebSocketMessageSubscriber subscriber = new WebSocketMessageSubscriber(eventPublisher);
         return session -> {
             log.info("New websocket session established with client: {}", session.getId());
-
             return session.receive()
                     .map(WebSocketMessage::getPayloadAsText)
                     .map(this::toHealthKitMetric)
@@ -93,25 +87,6 @@ public class HealthMetricWebSocketHandler {
                     .doOnComplete(subscriber::onComplete)
                     .zipWith(session.send(Flux.from(events).map(this::toJSON).map(session::textMessage)))
                     .then();
-
-
-
-//            Flux<WebSocketMessage> map =  session.receive()
-//                    .map(WebSocketMessage::getPayloadAsText)
-//                    .map((text) -> {
-//                        try {
-//                            log.info("Serializing message into : {}", text);
-//                            return mapper.readValue(text, HealthKitMetric.class);
-//                        } catch(Exception e) {
-//                            log.error("Failed to serialize json string: \"{}\" into a new HealthKitMetric class", text);
-//                            return new HealthKitMetric();
-//                        }
-//                    })
-//                    .flatMap(healthKitMetricRepository::save)
-//                    .flatMap(producer::produce)
-//                    .map(HealthConsumerApplication.GreetingsResponse::getMessage)
-//                    .map(session::textMessage);
-//            return session.send(map);
         };
     }
 }

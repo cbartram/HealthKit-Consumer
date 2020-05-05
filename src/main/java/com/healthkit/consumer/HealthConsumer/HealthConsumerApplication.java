@@ -23,7 +23,7 @@ public class HealthConsumerApplication {
 	@DependsOn("eventPublisher")
 	public Flux<HealthKitMetric> events(UnicastProcessor<HealthKitMetric> eventPublisher) {
 		return eventPublisher
-				.replay(25)
+				.replay(1)
 				.autoConnect();
 	}
 }

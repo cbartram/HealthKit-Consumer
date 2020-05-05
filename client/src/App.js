@@ -3,26 +3,19 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 import './App.css';
 import LineGraph from "./components/LineGraph/LineGraph";
-import {fetchHealthMetrics} from "./actions/actions";
+import { updateHealthMetrics} from "./actions/actions";
 
 const mapStateToProps = state => ({
-    data: state.health.metrics.map((m, i) => ({ value: parseFloat(m.value), timestamp: moment().subtract(i, 'minutes').format('hh:mm') })),
+    healthMetrics: state.health.metrics,
 });
 
 const mapDispatchToProps = dispatch => ({
-    fetchHeartRate: () => dispatch(fetchHealthMetrics())
+    updateHealthMetrics: (payload) => dispatch(updateHealthMetrics(payload))
 });
 
 function App(props) {
-
-    const [healthMetrics, setHealthMetrics] = useState([]);
-
     useEffect(() => {
         let ws = new WebSocket('ws://localhost:8080/ws/metrics');
-        // ws.addEventListener('open', () => {
-        //     let value = window.prompt('What is the heart rate value?');
-        //     ws.send("{ \"metric\": \"heartRate\", \"value\": \"" +  value + "\"}");
-        // });
 
         ws.onopen = () => {
             console.log('[INFO] Connected...')
@@ -45,6 +38,7 @@ function App(props) {
         ws.onmessage = ({ data }) => {
          const d = JSON.parse(data);
          console.log('[INFO] Received event: ', d);
+         props.updateHealthMetrics(d);
         };
     }, []);
 
@@ -54,7 +48,7 @@ function App(props) {
                 <p>
                     View latest Health Metrics
                 </p>
-                <LineGraph series={healthMetrics} />
+                <LineGraph series={props.healthMetrics} />
             </header>
         </div>
     );
