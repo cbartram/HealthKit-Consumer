@@ -13,7 +13,6 @@ import * as serviceWorker from './serviceWorker';
 import { fetchHealthMetrics } from './actions/actions';
 import {BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
-
 // Setup Redux middleware and store
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(rootReducer,{}, composeEnhancers(
@@ -75,8 +74,7 @@ const render = async () => {
 };
 
 // Execute the App
-render().then(() => {
-});
+render().then(() => {});
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
