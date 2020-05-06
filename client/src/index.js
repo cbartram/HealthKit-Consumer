@@ -11,6 +11,7 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { fetchHealthMetrics } from './actions/actions';
+import {BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 
 // Setup Redux middleware and store
@@ -50,7 +51,13 @@ const render = async () => {
         // Now render the full page
         ReactDOM.render(
             <Provider store={store}>
-                <App />
+                <Router>
+                    <Switch>
+                        <Route path="/">
+                            <App />
+                        </Route>
+                    </Switch>
+                </Router>
             </Provider>
             , document.getElementById('root'));
 

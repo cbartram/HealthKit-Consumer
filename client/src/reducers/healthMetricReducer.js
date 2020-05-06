@@ -11,7 +11,14 @@ import {
 } from "../constants";
 import moment from "moment";
 
-export default (state = { isFetching: false, error: null, }, action) => {
+
+const INITIAL_STATE = {
+    isFetching: false,
+    error: null,
+    metrics: []
+};
+
+export default (state = INITIAL_STATE, action) => {
     switch (action.type) {
         case GET_HEALTH_METRICS_REQUEST:
             return {

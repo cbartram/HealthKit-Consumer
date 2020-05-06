@@ -1,33 +1,23 @@
 import React from 'react';
 import { Menu } from 'semantic-ui-react'
+import Logo from '../../resources/images/logo.png';
 import './Navbar.css';
 
 
 const Navbar = (props) => {
   return (
       <Menu>
-        <Menu.Item
-            name='editorials'
-            active={activeItem === 'editorials'}
-            onClick={this.handleItemClick}
-        >
-          Editorials
+          <Menu.Item>
+              <img src={Logo} alt="logo" />
+          </Menu.Item>
+          <Menu.Item name='home' active>
+          Home
         </Menu.Item>
-
-        <Menu.Item
-            name='reviews'
-            active={activeItem === 'reviews'}
-            onClick={this.handleItemClick}
-        >
-          Reviews
+        <Menu.Item name='metrics'>
+          Metrics
         </Menu.Item>
-
-        <Menu.Item
-            name='upcomingEvents'
-            active={activeItem === 'upcomingEvents'}
-            onClick={this.handleItemClick}
-        >
-          Upcoming Events
+        <Menu.Item name='analytics'>
+          Analytics
         </Menu.Item>
       </Menu>
   )

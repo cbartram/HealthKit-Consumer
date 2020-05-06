@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import moment from 'moment';
+import withContainer from "./components/withContainer";
 import './App.css';
 import LineGraph from "./components/LineGraph/LineGraph";
 import { updateHealthMetrics} from "./actions/actions";
+import {Container} from "semantic-ui-react";
 
 const mapStateToProps = state => ({
     healthMetrics: state.health.metrics,
@@ -43,15 +44,10 @@ function App(props) {
     }, []);
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <p>
-                    View latest Health Metrics
-                </p>
-                <LineGraph series={props.healthMetrics} />
-            </header>
-        </div>
+        <Container>
+            <LineGraph series={props.healthMetrics} />
+        </Container>
     );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default withContainer(connect(mapStateToProps, mapDispatchToProps)(App));
