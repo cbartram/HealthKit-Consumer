@@ -1,4 +1,4 @@
-package com.healthkit.consumer.HealthConsumer.configuration;
+package com.healthkit.consumer.HealthConsumer.configuration.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
