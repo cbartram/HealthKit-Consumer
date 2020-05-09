@@ -1,4 +1,4 @@
-import { post } from '../util';
+import { post } from '../util/util';
 import * as constants from '../constants'
 import {UPDATE_HEALTH_METRICS} from "../constants";
 

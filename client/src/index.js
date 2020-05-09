@@ -4,14 +4,15 @@ import {Provider} from 'react-redux'
 import { Loader } from 'semantic-ui-react';
 import {applyMiddleware, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
+import {BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import rootReducer from './reducers/rootReducer';
 import * as constants from './constants'
-import {dispatchProcess, dispatchProcessMiddleware} from './util';
+import {dispatchProcess, dispatchProcessMiddleware} from './util/util';
 import './index.css';
-import App from './App';
+import App from './pages/Dashboard/App';
+import PrivateRoute  from "./components/PrivateRoute";
 import * as serviceWorker from './serviceWorker';
 import { fetchHealthMetrics } from './actions/actions';
-import {BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 // Setup Redux middleware and store
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -52,9 +53,8 @@ const render = async () => {
             <Provider store={store}>
                 <Router>
                     <Switch>
-                        <Route path="/">
-                            <App />
-                        </Route>
+                        <Route path="/" component={Home} />
+                        <PrivateRoute path="/dashboard" component={App} />
                     </Switch>
                 </Router>
             </Provider>

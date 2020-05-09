@@ -1,6 +1,6 @@
 import React from 'react';
 import isNil from 'lodash/isNil';
-import { getRequestUrl } from "./constants";
+import { getRequestUrl } from "../constants";
 
 /**
  * Makes a generic POST request to the API to retrieve, insert, or update

@@ -52,7 +52,8 @@ public class HealthMetricWebSocketHandler {
         }
 
         public void onComplete() {
-            lastReceivedEvent.ifPresent(event -> eventPublisher.onNext(new HealthKitMetric("disconnected", "62")));
+            // Dont publish any message when a client disconnects
+//            lastReceivedEvent.ifPresent(event -> eventPublisher.onNext(new HealthKitMetric("disconnected", "62")));
         }
     }
 
