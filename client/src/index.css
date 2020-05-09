@@ -1,6 +1,14 @@
+@font-face {
+  font-family: 'MyFont';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./resources/fonts/AirbnbCereal-Medium.ttf');
+  src: local('Cereal'), url('./resources/fonts/AirbnbCereal-Medium.ttf') format('truetype');
+}
+
 body {
   margin: 0;
-  font-family: 'Roboto', Open Sans,Segoe UI,sans-serif;
+  font-family: 'MyFont', 'Roboto', Open Sans,Segoe UI,sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #f6f9fc;
@@ -25,4 +33,54 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.ui.card {
+  position: relative;
+  -webkit-transition: all .3s ease-in-out;
+  -o-transition: all .3s ease-in-out;
+  transition: all .3s ease-in-out;
+  border-color: transparent !important;
+  border: 30px !important;
+  border-bottom-color: transparent!important;
+  /*border-radius: 18px;*/
+  /*-webkit-box-shadow: 0 19px 20px 0 rgba(0,0,0,.05);*/
+  /*box-shadow: 0 19px 20px 0 rgba(0,0,0,.05);*/
+  background-color: #fff;
+}
+
+.ui.card > .image {
+  position: relative;
+  /*border-top-left-radius: 18px;*/
+  /*border-top-right-radius: 18px;*/
+  overflow: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+p, .common-body-text {
+  font-size: 16px !important;
+  font-weight: 100 !important;
+  line-height: 1.375em !important;
+  color: rgb(72, 72, 72) !important;
+}
+
+a {
+  color: #7875eb;
+  text-decoration: none;
+  line-height: inherit;
+  cursor: pointer;
+}
+
+/* Modal dimmer color */
+.dimmed.dimmable > .ui.modals.dimmer.visible {
+  background: rgba(82, 95, 127, .7) !important;
+}
+
+/* Needed to position the modal in the center of the screen */
+.ui.modal {
+  position: relative !important;
+}
+
+.ui.loader:after {
+  border-color: #6772e5 transparent transparent !important;
 }
