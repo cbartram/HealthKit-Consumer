@@ -1,18 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Provider} from 'react-redux'
+import { Provider } from 'react-redux'
 import { Loader } from 'semantic-ui-react';
-import {applyMiddleware, compose, createStore } from 'redux';
+import { applyMiddleware, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
-import {BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { Auth0Provider } from "./util/auth0-spa";
 import rootReducer from './reducers/rootReducer';
-import * as constants from './constants'
-import {dispatchProcess, dispatchProcessMiddleware} from './util/util';
-import './index.css';
-import App from './pages/Dashboard/App';
-import PrivateRoute  from "./components/PrivateRoute";
 import * as serviceWorker from './serviceWorker';
-import { fetchHealthMetrics } from './actions/actions';
+import Router from "./components/ClientRouter";
+import {
+    dispatchProcess,
+    dispatchProcessMiddleware,
+    history,
+} from './util/util';
+import {
+    fetchHealthMetrics,
+    getOAuthToken
+} from './actions/actions';
+import {
+    OAUTH_TOKEN_SUCCESS,
+    OAUTH_TOKEN_FAILURE,
+    GET_HEALTH_METRICS_SUCCESS,
+    GET_HEALTH_METRICS_FAILURE,
+    AUTH0_DOMAIN,
+    AUTH0_CLIENT_ID
+} from "./constants";
+import './index.css';
+
 
 // Setup Redux middleware and store
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -27,11 +41,22 @@ const store = createStore(rootReducer,{}, composeEnhancers(
  */
 const load = async () => {
     try {
-        await dispatchProcess(fetchHealthMetrics(), constants.GET_HEALTH_METRICS_SUCCESS, constants.GET_HEALTH_METRICS_FAILURE);
+        await dispatchProcess(getOAuthToken(), OAUTH_TOKEN_SUCCESS, OAUTH_TOKEN_FAILURE);
+        await dispatchProcess(fetchHealthMetrics(), GET_HEALTH_METRICS_SUCCESS, GET_HEALTH_METRICS_FAILURE);
     }
     catch (e) {
         console.log('[ERROR] Failed to load web app: ', e);
     }
+};
+
+// A function that routes the user to the right place
+// after login
+const onRedirectCallback = appState => {
+    history.push(
+        appState && appState.targetUrl
+            ? appState.targetUrl
+            : window.location.pathname
+    );
 };
 
 /**
@@ -48,16 +73,17 @@ const render = async () => {
 
     try {
         await load();
-        // Now render the full page
         ReactDOM.render(
-            <Provider store={store}>
-                <Router>
-                    <Switch>
-                        <Route path="/" component={Home} />
-                        <PrivateRoute path="/dashboard" component={App} />
-                    </Switch>
-                </Router>
-            </Provider>
+            <Auth0Provider
+                domain={AUTH0_DOMAIN}
+                client_id={AUTH0_CLIENT_ID}
+                redirect_uri={window.location.origin}
+                onRedirectCallback={onRedirectCallback}
+            >
+                <Provider store={store}>
+                    <Router />
+                </Provider>
+            </Auth0Provider>
             , document.getElementById('root'));
 
         // If you want your app to work offline and load faster, you can change
@@ -68,7 +94,7 @@ const render = async () => {
         console.log(err);
         ReactDOM.render(
             <Provider store={store}>
-                <App />
+                <Router />
             </Provider>, document.getElementById('root'));
     }
 };

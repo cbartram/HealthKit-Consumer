@@ -1,6 +1,9 @@
 import React from 'react';
 import isNil from 'lodash/isNil';
+import { createBrowserHistory } from "history";
 import { getRequestUrl } from "../constants";
+
+export const history = createBrowserHistory();
 
 /**
  * Makes a generic POST request to the API to retrieve, insert, or update

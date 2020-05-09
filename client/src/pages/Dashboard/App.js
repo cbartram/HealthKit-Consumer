@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import withContainer from "../../components/withContainer";
 import './App.css';
-import LineGraph from "./components/LineGraph/LineGraph";
-import { updateHealthMetrics} from "./actions/actions";
+import LineGraph from "../../components/LineGraph/LineGraph";
+import { updateHealthMetrics } from "../../actions/actions";
 import {Container} from "semantic-ui-react";
 
 const mapStateToProps = state => ({

@@ -44,9 +44,19 @@ export const getRequestUrl = (endpointURI) => {
 
 // Api endpoints
 export const GET_HEALTH_METRICS = '/health/metrics';
+export const OAUTH_ENDPOINT = '/oauth/token';
+
+// Configuration parameters
+export const AUTH0_DOMAIN = 'replace_this';
+export const AUTH0_CLIENT_ID = 'replace_this';
+export const CLIENT_ID = 'replace_this';
+export const CLIENT_SECRET = 'replace_this';
 
 // Redux Constants
 export const GET_HEALTH_METRICS_REQUEST = 'GET_HEALTH_METRICS_REQUEST';
 export const GET_HEALTH_METRICS_SUCCESS = 'GET_HEALTH_METRICS_SUCCESS';
 export const GET_HEALTH_METRICS_FAILURE = 'GET_HEALTH_METRICS_FAILURE';
 export const UPDATE_HEALTH_METRICS = 'UPDATE_HEALTH_METRICS';
+export const REQUEST_OAUTH_TOKEN = 'REQUEST_OAUTH_TOKEN';
+export const OAUTH_TOKEN_FAILURE = 'OAUTH_TOKEN_FAILURE';
+export const OAUTH_TOKEN_SUCCESS = 'OAUTH_TOKEN_SUCCESS';
