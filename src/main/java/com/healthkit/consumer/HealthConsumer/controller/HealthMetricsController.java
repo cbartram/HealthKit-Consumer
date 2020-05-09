@@ -6,7 +6,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
@@ -17,7 +17,7 @@ public class HealthMetricsController {
     @NonNull
     HealthKitMetricRepository healthKitMetricRepository;
 
-    @PostMapping(value = "/health/metrics", produces = "application/json", consumes = "application/json")
+    @GetMapping(value = "/api/v1/health/metrics", produces = "application/json", consumes = "application/json")
     public ResponseEntity<Mono<HealthKitResponse>> findAllMetrics() {
         Mono<HealthKitResponse> metrics = healthKitMetricRepository
                 .findAll()
