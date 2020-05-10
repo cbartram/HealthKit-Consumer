@@ -1,15 +1,13 @@
-import { post } from '../util/util';
+import { get } from '../util/util';
 import {
-    getRequestUrl,
     UPDATE_HEALTH_METRICS,
     GET_HEALTH_METRICS_FAILURE,
     GET_HEALTH_METRICS_SUCCESS,
     GET_HEALTH_METRICS_REQUEST,
     OAUTH_ENDPOINT,
     OAUTH_TOKEN_SUCCESS,
-    CLIENT_ID,
-    CLIENT_SECRET,
-    GET_HEALTH_METRICS
+    AUTH0_CLIENT_SECRET,
+    GET_HEALTH_METRICS, AUTH0_DOMAIN, AUTH0_CLIENT_ID
 } from "../constants";
 
 /**
@@ -17,8 +15,8 @@ import {
  * the backend for storage. This also updates redux with the latest values.
  * @returns {Function}
  */
-export const fetchHealthMetrics = (payload) => async (dispatch, getState) => {
-    await post(payload, GET_HEALTH_METRICS, GET_HEALTH_METRICS_REQUEST, GET_HEALTH_METRICS_SUCCESS, GET_HEALTH_METRICS_FAILURE, dispatch, getState);
+export const fetchHealthMetrics = () => async (dispatch, getState) => {
+    await get(GET_HEALTH_METRICS, GET_HEALTH_METRICS_REQUEST, GET_HEALTH_METRICS_SUCCESS, GET_HEALTH_METRICS_FAILURE, dispatch, getState);
 };
 
 export const updateHealthMetrics = (payload) => ({
@@ -32,11 +30,18 @@ export const updateHealthMetrics = (payload) => ({
  * @returns {Function}
  */
 export const getOAuthToken = () => async (dispatch) => {
-    const response = await (await fetch(getRequestUrl(OAUTH_ENDPOINT), {
-        method: 'GET',
+    const response = await (await fetch(`${AUTH0_DOMAIN}${OAUTH_ENDPOINT}`, {
+        method: 'POST',
         headers: {
-            Authorization: `Basic ${btoa(`${CLIENT_ID}:${CLIENT_SECRET}`)}`
-        }
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            client_id: AUTH0_CLIENT_ID,
+            client_secret: AUTH0_CLIENT_SECRET,
+            grant_type: 'client_credentials',
+            audience: 'http://localhost:8080'
+        })
     })).json();
     dispatch({ type: OAUTH_TOKEN_SUCCESS, payload: response });
 };

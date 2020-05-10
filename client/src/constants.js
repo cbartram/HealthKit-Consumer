@@ -43,14 +43,13 @@ export const getRequestUrl = (endpointURI) => {
 };
 
 // Api endpoints
-export const GET_HEALTH_METRICS = '/health/metrics';
+export const GET_HEALTH_METRICS = '/api/v1/health/metrics';
 export const OAUTH_ENDPOINT = '/oauth/token';
 
 // Configuration parameters
-export const AUTH0_DOMAIN = 'replace_this';
-export const AUTH0_CLIENT_ID = 'replace_this';
-export const CLIENT_ID = 'replace_this';
-export const CLIENT_SECRET = 'replace_this';
+export const AUTH0_DOMAIN = 'https://craftyyak.auth0.com';
+export const AUTH0_CLIENT_ID = process.env.REACT_APP_AUTH0_CLIENT_ID;
+export const AUTH0_CLIENT_SECRET = process.env.REACT_APP_AUTH0_CLIENT_SECRET
 
 // Redux Constants
 export const GET_HEALTH_METRICS_REQUEST = 'GET_HEALTH_METRICS_REQUEST';

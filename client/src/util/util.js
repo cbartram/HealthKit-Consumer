@@ -35,11 +35,79 @@ export const post = async (body, path, requestType, successType, failureType, di
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
+                'Authorization': `Bearer ${getState().auth.access_token}`
             },
             body: JSON.stringify(body),
         };
 
         debug && console.log('[DEBUG] Making POST to url: ', getRequestUrl(path));
+        const response = await (await fetch(getRequestUrl(path), params)).json();
+        debug && console.log('[DEBUG] Post Response: ', response);
+
+        return new Promise((resolve, reject) => {
+            if (response.statusCode === 200) {
+                doDispatch &&
+                dispatch({
+                    type: successType,
+                    payload: response,
+                });
+
+                resolve(response);
+            } else if (response.statusCode > 200 || typeof response.statusCode === 'undefined') {
+                // An error occurred
+                doDispatch &&
+                dispatch({
+                    type: failureType,
+                    payload: { message: `There was an error retrieving data from the API: ${JSON.stringify(response)}`}
+                });
+
+                reject(response);
+            }
+        });
+    } catch(err) {
+        console.log('[ERROR] Error receiving response from API', err);
+        doDispatch &&
+        dispatch({
+            type: failureType,
+            payload: { message: err.message }
+        });
+    }
+};
+
+/**
+ * Makes a standard GET request to the URL and optionally dispatches other specified
+ * actions to redux as well.
+ * @param path
+ * @param requestType
+ * @param successType
+ * @param failureType
+ * @param dispatch
+ * @param getState
+ * @param debug
+ * @returns {Promise<unknown>}
+ */
+export const get = async (path, requestType, successType, failureType, dispatch, getState, debug = false) => {
+    //If we don't need redux for the action we can just skip the dispatch by setting the actions to null
+    let doDispatch = true;
+    if (isNil(requestType) || isNil(successType) || isNil(failureType)) doDispatch = false;
+
+    doDispatch &&
+    dispatch({
+        type: requestType,
+        payload:{} // Sets isFetching to true (useful for unit testing redux)
+    });
+
+    try {
+        const params = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                Authorization: `Bearer ${getState().auth.access_token}`
+            },
+        };
+
+        debug && console.log('[DEBUG] Making GET to url: ', getRequestUrl(path));
         const response = await (await fetch(getRequestUrl(path), params)).json();
         debug && console.log('[DEBUG] Post Response: ', response);
 
