@@ -65,10 +65,37 @@ p, .common-body-text {
 }
 
 a {
-  color: #7875eb;
   text-decoration: none;
   line-height: inherit;
   cursor: pointer;
+}
+@-webkit-keyframes triggerBorder {
+  0% {
+    box-shadow:0 0 0 0 #ea4b46
+  }
+  to {
+    box-shadow:0 0 0 9px rgba(234,75,70,0)
+  }
+}
+@keyframes triggerBorder{
+  0% {
+     box-shadow:0 0 0 0 #ea4b46
+  }
+  to {
+    box-shadow:0 0 0 9px rgba(234,75,70,0)
+  }
+}
+
+.ui.button.primary {
+  animation: triggerBorder 1.4s linear infinite;
+  animation-duration: 1.4s;
+  animation-timing-function: linear;
+  animation-delay: 0s;
+  animation-iteration-count: infinite;
+  animation-direction: normal;
+  animation-fill-mode: none;
+  animation-play-state: running;
+  animation-name: triggerBorder;
 }
 
 /* Modal dimmer color */
