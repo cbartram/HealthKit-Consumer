@@ -47,9 +47,13 @@ export const GET_HEALTH_METRICS = '/api/v1/health/metrics';
 export const OAUTH_ENDPOINT = '/oauth/token';
 
 // Configuration parameters
-export const AUTH0_DOMAIN = 'https://craftyyak.auth0.com';
+export const AUTH0_DOMAIN = 'craftyyak.auth0.com';
 export const AUTH0_CLIENT_ID = process.env.REACT_APP_AUTH0_CLIENT_ID;
-export const AUTH0_CLIENT_SECRET = process.env.REACT_APP_AUTH0_CLIENT_SECRET
+export const AUTH0_CLIENT_SECRET = process.env.REACT_APP_AUTH0_CLIENT_SECRET;
+
+// The following credentials are for the React App's SPA to login but don't have anything to do with
+// Spring or the backend services. There are separate credentials above for securing backend API routes with OAuth 2.0
+export const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
 
 // Redux Constants
 export const GET_HEALTH_METRICS_REQUEST = 'GET_HEALTH_METRICS_REQUEST';

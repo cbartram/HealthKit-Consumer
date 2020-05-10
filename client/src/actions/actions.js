@@ -30,7 +30,7 @@ export const updateHealthMetrics = (payload) => ({
  * @returns {Function}
  */
 export const getOAuthToken = () => async (dispatch) => {
-    const response = await (await fetch(`${AUTH0_DOMAIN}${OAUTH_ENDPOINT}`, {
+    const response = await (await fetch(`https://${AUTH0_DOMAIN}${OAUTH_ENDPOINT}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

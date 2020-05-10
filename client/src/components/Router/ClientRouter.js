@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import { Router, Route, Switch } from "react-router-dom";
 import {connect} from 'react-redux';
-import Home from "../pages/Home/Home";
-import PrivateRoute from "./PrivateRoute";
-import App from "../pages/Dashboard/App";
-import NotFound from "../pages/NotFound/NotFound";
-import { history } from '../util/util';
+import Home from "../../pages/Home/Home";
+import PrivateRoute from "../PrivateRoute";
+import App from "../../pages/Dashboard/App";
+import NotFound from "../../pages/NotFound/NotFound";
+import { history } from '../../util/util';
 
 const mapStateToProps = state => ({
     auth: state.auth,

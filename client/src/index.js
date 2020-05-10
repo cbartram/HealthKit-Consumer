@@ -7,7 +7,7 @@ import thunk from 'redux-thunk';
 import { Auth0Provider } from "./util/auth0-spa";
 import rootReducer from './reducers/rootReducer';
 import * as serviceWorker from './serviceWorker';
-import Router from "./components/ClientRouter";
+import Router from "./components/Router/ClientRouter";
 import {
     dispatchProcess,
     dispatchProcessMiddleware,
@@ -23,7 +23,7 @@ import {
     GET_HEALTH_METRICS_SUCCESS,
     GET_HEALTH_METRICS_FAILURE,
     AUTH0_DOMAIN,
-    AUTH0_CLIENT_ID
+    CLIENT_ID
 } from "./constants";
 import './index.css';
 
@@ -72,11 +72,12 @@ const render = async () => {
         </Provider> ,document.getElementById('root'));
 
     try {
+        console.log('[INFO] Client id: ', CLIENT_ID);
         await load();
         ReactDOM.render(
             <Auth0Provider
                 domain={AUTH0_DOMAIN}
-                client_id={AUTH0_CLIENT_ID}
+                client_id={CLIENT_ID}
                 redirect_uri={window.location.origin}
                 onRedirectCallback={onRedirectCallback}
             >
