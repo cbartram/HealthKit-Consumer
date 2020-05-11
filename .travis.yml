@@ -16,8 +16,8 @@ addons:
 
 script:
 - "./gradlew build --scan -s"
-- "./gradlew build jacocoTestReport sonarqube"
-- "./gradlew sonarqube -Dsonar.login=dd7b6891cd23b3945a60a62f71343c046c1e86dc"
+- "./gradlew build jacocoTestReport sonarqube -Dsonar.login=dd7b6891cd23b3945a60a62f71343c046c1e86dc"
+#- "./gradlew sonarqube -Dsonar.login=dd7b6891cd23b3945a60a62f71343c046c1e86dc"
 
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
