@@ -22,8 +22,6 @@ sonarqube {
 		property "sonar.sourceEncoding", "UTF-8"
 		property "sonar.sources", "."
 		property "sonar.exclusions", "client/**/*,build/**/*,gradle/**/*,.gradle/**/*,src/test/**/*,*.properties"
-//		property "sonar.login", "cbartram"
-//		property "sonar.password", ""
 	}
 }
 
@@ -47,8 +45,11 @@ dependencies {
 	implementation 'org.springframework.security:spring-security-oauth2-resource-server'
 	implementation 'org.springframework.security:spring-security-oauth2-jose'
 	implementation 'org.springframework.security:spring-security-config'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+	compileOnly 'org.projectlombok:lombok:1.18.12'
+	annotationProcessor 'org.projectlombok:lombok:1.18.12'
+	testCompileOnly 'org.projectlombok:lombok:1.18.12'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+	testCompile "org.mockito:mockito-core:2.+"
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
