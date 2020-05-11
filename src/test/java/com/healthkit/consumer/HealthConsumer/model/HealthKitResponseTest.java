@@ -28,6 +28,6 @@ public class HealthKitResponseTest {
         assertEquals(Collections.emptyList(), response.getMetrics());
         assertEquals(200, response.getStatusCode());
 
-        assertEquals("", response.toString());
+        assertEquals("HealthKitResponse(metrics=[], statusCode=200)", response.toString());
     }
 }
