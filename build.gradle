@@ -1,9 +1,9 @@
 plugins {
 	id 'org.springframework.boot' version '2.2.6.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id "org.sonarqube" version "2.8"
 	id 'java'
 }
-
 group = 'com.healthkit.consumer'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
@@ -12,6 +12,21 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+}
+
+sonarqube {
+	properties {
+		property "sonar.projectKey", "cbartram_HealthKit-Consumer"
+		property "sonar.projectVersion", "1.0"
+		property "sonar.sourceEncoding", "UTF-8"
+		property "sonar.sources", "."
+		property "sonar.exclusions", "client/**/*,build/**/*,gradle/**/*,.gradle/**/*,src/test/**/*,*.properties"
+	}
+}
+
+buildScan {
+	licenseAgreementUrl = "https://gradle.com/terms-of-service"
+	licenseAgree = "yes"
 }
 
 repositories {
