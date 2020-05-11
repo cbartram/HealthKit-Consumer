@@ -20,7 +20,7 @@ addons:
 
 script:
   - ./gradlew build --scan -s
-  - ./gradlew sonarqube -Dsonar.login=dirDGuvgatYmQ2XYTAPf7qWLXmtDjNztc6mQiQa1Rfy981qUJ41eu7zAYevlUQCojE9yaaN/YRYk7QCusUtId9TeqrY5SxEd04Q2Vg7Acm//XUqd3LIHbIOd4jMoRq92y/dhogXDtQndsmMSoXyipi/PBjQ8wu2uBsdqVx4vAN9JNwnanWRAV+1BqpB/A8qr+UkJm3I8SHq0oS3oYDyGKFrd5npiNZkAsMylNH5PGCnS5DAsmPUbKpdXkmKJxdLI1/BSVKWRDBcykbZ2FLt6X8ihOknZv5oCO8w8BpeWFuKl1n5zI3u2qO6dEkIvS9xfyvVse41M470B9J/wux2kpvPPUd2MTne9eWm3rkXTmOUO/Tjb4ePKM0B+hxoPwuStkiv9RG4iRWhAz4bqPS9xFs7YdPrWqMu8UzKWgM/n2LSy4Y6bFkKqt8nWcKTR7IekoOxiNFtSSQ0AizkDpOtK+KjvYIY4pTiosAJ54D7je89fAHrOXZ6yilKNKpMGtxYQItzO9dluwqfIIce8Ux9+IywEeR0ozZYX0q+df+CSE2mi0HaLBYUtsqlegLukYz7KBsT4U/sC1wAo4OBoQLvxoPxhAIMjDlpFZyo7AcJ/9PvYzZ8mDTD+YYQizFpU2kJvwc8F7CcgAAvb38NJTMsmaSEng4VkfTw/1Zbk6/bCOsU=
+  - ./gradlew sonarqube -Dsonar.login=dd7b6891cd23b3945a60a62f71343c046c1e86dc
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
