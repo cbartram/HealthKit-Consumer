@@ -4,6 +4,9 @@ Consumer Application to Receive published events from HealthKit's WatchOS applic
 
 # Getting Started
 
+Run mongodb with: `$ docker run --name mongodb -p 27017:27017 -d -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=secret mongo:latest`
+Connect to mongo with `$ mongo -u admin -p secret --authenticationDatabase admin metrics`
+
 ### Reference Documentation
 For further reference, please consider the following sections:
 

@@ -35,7 +35,7 @@ before_install:
 script:
 - ./gradlew build --scan -s
 - ./gradlew build jacocoTestReport sonarqube -Dsonar.login=dd7b6891cd23b3945a60a62f71343c046c1e86dc
-- docker build -t cbartram/uravana:$PACKAGE_VERSION .
+- docker build -t cbartram/uravana:$PACKAGE_VERSION --build-arg JAR_FILE=build/libs/*.jar .
 
 #
 # Pushes a newly built Docker image to Docker Hub
