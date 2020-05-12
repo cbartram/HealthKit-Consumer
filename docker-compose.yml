@@ -1,0 +1,27 @@
+version: "3.3"
+services:
+  # The primary spring boot application
+  # with several environment variables set for mongodb
+  app:
+    environment:
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_USERNAME=${MONGO_USERNAME}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+    image: cbartram/health-consumer:${PACKAGE_VERSION}
+#    image: cbartram/uravana:0.0.1
+    ports:
+      - 80:8080
+    depends_on:
+      - mongodb
+
+  # Defines the MongoDB service which the main application depends on
+  # to run successfully
+  mongodb:
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    volumes:
+      - ./database:/data
+    ports:
+      - 27017:27017

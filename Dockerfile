@@ -10,6 +10,7 @@ ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} application.jar
 
 # Expose the necessary ports
+EXPOSE 80
 EXPOSE 8080
 EXPOSE 27017
 
