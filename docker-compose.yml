@@ -4,7 +4,7 @@ services:
   # with several environment variables set for mongodb
   app:
     environment:
-      - MONGO_HOST=${MONGO_HOST}
+      - ACTIVE_PROFILE=${ACTIVE_PROFILE}
       - MONGO_USERNAME=${MONGO_USERNAME}
       - MONGO_PASSWORD=${MONGO_PASSWORD}
     image: cbartram/health-consumer:${PACKAGE_VERSION}
