@@ -5,24 +5,54 @@ os: linux
 dist: trusty
 jdk: openjdk11
 
+services:
+  - docker
+
 secure:
 - q17HJvX7mJ66ruT2OXGzDizV886gkqZT+5lQ6ofCD3jHqREfRe5JkuMb6iJIS7FDwJrnSTn1ob4igbkuVpGueXXURBfKWtxvnBv10YNiOVsiqcCueSMptB5spvy9bRFf5IgBDRzIt7yMDxHzujSpQ54PU0OO1SBuUqFWOETXs62FnznpEixzTSrErKm/j9E5EozHnUCDmVRMq1OAb3xCCX5uOzp7jKmd+gW3bVvSwKWX3emIRlMDJrcBxLP/Omw60CM5rvtH4B03NeVFfI3M/hl0tAI/uMQ6nMjmXl5oV9aJydjiVXw5v4PyXJVyIya8N0ijssM7BXqMt/wa43fqTiTZOH0YSD8gPZehwRvsk0AJzEiEY8Qp6JS45/Gu5/LaM8wMazfAF/mcIXPecgEZYNOTsZNWAp5KfPUvqiGg0oTR7681XpN1/NiXoLKx5ZgfmeyHXvpqV9daMwT6IAWpuM38So2OwG8Z/92y0jMTDWNrhhAUYeyaUfR6bvmrEFShePLrTC3JKgsz0WgVtKJJMpQU6LVRkLRjRO0fcf3i/lnNm0UTEjt3Td8NwoeooLsusVjbPo9ZL0YRpnmIlWr6XQ3qEs4yqo1zG8mREcaCJytKzxUqrNPmjettiGyNJ91xNxiTE1Cne2BYZOG57/QFoI39W+Nsr2yx6WVR7pLT5nY=
 
+#
+# SonarQube static code analysis scan
+#
 addons:
   sonarcloud:
     organization: cbartram-github
     token:
       secure: kdJnXIDu6tx2qDUDt4g/JSNBYA9b2gSTQ3prYkycb+pyKcx/GeGrQcZcQwxG5HGifSg1SCyAdLKUDhoWC0OOSoXACIKSWa8aU8Aynk3ncUDs2tpzVa+p/V4gflpEjeas2HSnsji2hBUUufFXvmG3chHrralRqxaPl5T9Oi/5AfA0onpIBy8frjxykYAfU667F3hfcVUJ5mAxN0ZGXmoEUaSgI/1qXaD/nJ5Vmsx89kSoYRl0un1TCjJOQ9qQBPNvtxGU/x/+WJ/7Tuku4FqmlBCUiaV9xQoxxeJsV9GrTDByulgkw9wauKbXQekQySh63r3xwuNPjn/Rr9WhHVTl5qpEqcH7Wwsa8Ly8yTzuiwQVDTqZ0aVW4f0Wk9mRfb/WinGlH2YRZTmBfR7Gwn+RoQQWXwVyxxkCVgRlHMDAHg3d6BCC9ALoHrBMgQFJd5Zjvs6YRAZsCgnGvqBOibvDIg76VIE2BNbojEytsuoxwCH+jz6YMy1bcwx2b0I1OEuCsC5H2icrXzW1XDOrIpDXdKCGmlWyR+gwbQdxaAsg83VRE+/tfXarVEP+FDYNaxcOUhQ1rtQTAzIjKIy02HAK77g+3BxAVK97+nZvlradhKWLlL9OsfYwUypvLeb5kMHvpp/CNOTAA+v2MrmlvsyEzJYDjtUwLZJE5saGtPWcLOA=
 
+#
+# Sets some necessary environment variables and
+# login to Docker to push the built image
+#
+before_install:
+  - PACKAGE_VERSION=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+#
+# Builds a fat jar of the application source code with Gradle
+# and builds a new Docker image
+#
 script:
-- "./gradlew build --scan -s"
-- "./gradlew build jacocoTestReport sonarqube -Dsonar.login=dd7b6891cd23b3945a60a62f71343c046c1e86dc"
-#- "./gradlew sonarqube -Dsonar.login=dd7b6891cd23b3945a60a62f71343c046c1e86dc"
+- ./gradlew build --scan -s
+- ./gradlew build jacocoTestReport sonarqube -Dsonar.login=dd7b6891cd23b3945a60a62f71343c046c1e86dc
+- docker build -t cbartram/uravana:$PACKAGE_VERSION .
+
+#
+# Pushes a newly built Docker image to Docker Hub
+#
+deploy:
+  provider: script
+  script: docker push cbartram/uravana:$PACKAGE_VERSION
+  on:
+    branch: master
 
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -rf $HOME/.gradle/caches/*/plugin-resolution/
 
+#
+# Cache's gradle files for faster subsequent builds
+#
 cache:
   directories:
   - "$HOME/.gradle/caches/"
